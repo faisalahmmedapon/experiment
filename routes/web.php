@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\CartController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +15,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+require __DIR__.'/auth.php';
+
+
+
+// Route::get('/products', [ProductController::class,'index'])->name('products');
+Route::get('/', [ProductController::class,'index'])->name('products');
+
+Route::get('/add-to-cart/{product}', [CartController::class, 'addToCart'])->name('addToCart');
+Route::get('/carts', [CartController::class, 'carts'])->name('carts');
+Route::get('/carts-remove', [CartController::class, 'remove'])->name('remove');
+
+Route::post('/transfer-cart-to-database', [CartController::class, 'transferCartToDatabase']);
